@@ -12,7 +12,7 @@ services:
       - ./wordpress:/var/www/html
       - ./certs:/etc/letsencrypt
       - ./certs-data:/data/letsencrypt
-    links:
+    depends_on:
       - wordpress
     restart: always
 
@@ -23,6 +23,9 @@ services:
       - ./mysql:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_USER=wp_user                 # same as WORDPRESS_DB_USER
+      - MYSQL_PASSWORD=wp_password         # same as WORDPRESS_DB_PASSWORD
+      - MYSQL_DATABASE=wordpress           # same as WORDPRESS_DB_NAME
     restart: always
 
   wordpress:
@@ -34,7 +37,9 @@ services:
       - WORDPRESS_DB_NAME=wordpress
       - WORDPRESS_TABLE_PREFIX=wp_
       - WORDPRESS_DB_HOST=mysql
-      - WORDPRESS_DB_PASSWORD=password
-    links:
+      - WORDPRESS_DB_PASSWORD=wp_password  # new DB password
+      - WORDPRESS_DB_USER=wp_user          # new DB user
+
+    depends_on:
       - mysql
     restart: always
